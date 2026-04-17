@@ -7,7 +7,7 @@ class AnalizadorNLP:
     def __init__(self, modelo="qwen2.5:0.5b"):
         self.modelo = modelo
         # En una implementación real, get_client() podría devolver la instancia
-        self.client = ollama 
+        self.client = get_client()
 
     def procesar_texto_completo(self, texto: str):
         """Ejecuta todos los niveles de análisis sobre un texto"""
