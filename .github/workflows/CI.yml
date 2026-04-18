@@ -1,0 +1,53 @@
+# .github/workflows/ci.yml
+name: CI Pipeline — NLP Ollama + Streamlit
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout del código
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configurar Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # O la versión que uses en tu proyecto
+
+      # 3. Instalar dependencias
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest pytest-cov bandit  # Instalamos herramientas de CI
+
+      # 4. Ejecutar linter (Flake8)
+      - name: Lint with flake8
+        run: |
+          # Detiene la ejecución si hay errores de sintaxis o variables no definidas
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Advertencias de estilo (opcional: no detiene el build si prefieres ser flexible)
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      # 5. Análisis de seguridad (Bandit)
+      - name: Security analysis with Bandit
+        run: bandit -r src/ almacenamiento/
+
+      # 6. Tests unitarios y Cobertura
+      - name: Run tests with pytest and coverage
+        run: |
+          pytest --cov=src --cov=almacenamiento tests/
+
+      # 7. Verificar carpetas (Paso personalizado sugerido)
+      - name: Verify project structure
+        run: |
+          echo "Checking if critical folders exist..."
+          test -d src && test -d tests && echo "Structure OK"

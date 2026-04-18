@@ -4,18 +4,23 @@ import json
 import shutil
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-from guardar import guardar_json, guardar_txt, JSON_DIR, TXT_DIR, BASE_DIR
+from almacenamiento.guardar import guardar_json, guardar_txt, JSON_DIR, TXT_DIR, BASE_DIR
 
 # --- FIXTURES PARA SETUP & TEARDOWN ---
 
+def remove_readonly(func, path, excinfo):
+    """Limpia el atributo de solo lectura y reintenta el borrado."""
+    os.chmod(path, 0o777)
+    func(path)
+
 @pytest.fixture(autouse=True)
 def setup_teardown():
-    """Limpia el directorio de resultados antes y después de cada test."""
+    """Limpia el directorio de resultados de forma segura."""
     if os.path.exists(BASE_DIR):
-        shutil.rmtree(BASE_DIR)
+        shutil.rmtree(BASE_DIR, onerror=remove_readonly)
     yield
     if os.path.exists(BASE_DIR):
-        shutil.rmtree(BASE_DIR)
+        shutil.rmtree(BASE_DIR, onerror=remove_readonly)
 
 @pytest.fixture
 def mock_ollama_data():
