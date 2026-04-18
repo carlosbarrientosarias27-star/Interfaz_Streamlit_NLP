@@ -1,0 +1,32 @@
+{
+    "sentimiento": {
+        "sentimiento": "positivo/negativo/neutral",
+        "puntuacion": 1.0,
+        "emociones": [
+            "honesto",
+            "deportivo"
+        ],
+        "confianza": 1.0
+    },
+    "entidades": {
+        "personas": [
+            "carlos"
+        ],
+        "organizaciones": [],
+        "lugar": "",
+        "fechas": [
+            "n/a"
+        ],
+        "cantidades": [
+            "0"
+        ],
+        "otros": []
+    },
+    "intencion": {
+        "intencion_principal": "no",
+        "subcategoria": "",
+        "urgencia": "negativa",
+        "accion_sugerida": "probar los ejercicios"
+    },
+    "resumen": "Carlos realizó todos los exámenes del curso."
+}

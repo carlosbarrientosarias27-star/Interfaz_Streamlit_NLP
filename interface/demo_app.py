@@ -1,4 +1,10 @@
+import os 
+import sys 
 import streamlit as st
+
+# Esto añade la carpeta raíz del proyecto al camino de búsqueda de Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from src.analizador import AnalizadorNLP
 from src.cliente import check_connection
 from almacenamiento.guardar import guardar_json, guardar_txt
