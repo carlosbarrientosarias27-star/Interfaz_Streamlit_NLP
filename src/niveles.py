@@ -32,30 +32,19 @@ def detectar_intencion(client, texto, modelo):
     return json.loads(response['message']['content'])
 
 def generar_resumen(client, texto, modelo):
-    """Genera tres niveles de resumen como requiere la interfaz"""
-    prompt = f"""Genera tres resúmenes del siguiente ticket en formato JSON:
-    - "breve": Una frase corta.
-    - "medio": Un párrafo explicativo.
-    - "detallado": Análisis completo de puntos clave.
-    Texto: {texto}"""
-    
-    response = client.chat(
-        model=modelo,
-        messages=[{"role": "user", "content": prompt}],
-        format="json"
-    )
-    return json.loads(response['message']['content'])
+    """Genera los 3 niveles requeridos por los expanders de la UI"""
+    prompt = "Resume en JSON con llaves: 'breve', 'medio', 'detallado'"
+    try:
+        response = client.chat(model=modelo, messages=[{"role": "user", "content": f"{prompt}\nTexto: {texto}"}], format="json")
+        return json.loads(response['message']['content'])
+    except:
+        return {"breve": "Error", "medio": "No disponible", "detallado": "Error de proceso"}
 
 def clasificar_ticket(client, texto, modelo):
-    """Quinto análisis obligatorio para el BLOQUE 7"""
-    prompt = f"""Clasifica el ticket en formato JSON con:
-    - "tema": Categoría técnica.
-    - "prioridad": Baja, Media, Alta o Crítica.
-    Texto: {texto}"""
-    
-    response = client.chat(
-        model=modelo,
-        messages=[{"role": "user", "content": prompt}],
-        format="json"
-    )
-    return json.loads(response['message']['content'])
+    """Quinto análisis obligatorio"""
+    prompt = "Clasifica en JSON con llaves: 'tema', 'prioridad' (Baja, Media, Alta, Crítica)"
+    try:
+        response = client.chat(model=modelo, messages=[{"role": "user", "content": f"{prompt}\nTexto: {texto}"}], format="json")
+        return json.loads(response['message']['content'])
+    except:
+        return {"tema": "Soporte", "prioridad": "Media"}
