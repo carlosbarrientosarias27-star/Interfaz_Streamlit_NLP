@@ -1,9 +1,3 @@
 .env
 __pycache__
 __init__.py
-
-# Ignorar contenido de resultados pero mantener la carpeta
-almacenamiento/resultados/json/*
-almacenamiento/resultados/txt/*
-!almacenamiento/resultados/json/.gitkeep
-!almacenamiento/resultados/txt/.gitkeep

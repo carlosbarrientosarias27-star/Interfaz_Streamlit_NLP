@@ -70,49 +70,33 @@ def main_ui():
             st.rerun()
 
     with col_der:
+        # ESTE ES EL BLOQUE QUE DEBES INSERTAR
         if btn_analizar and texto_input:
-            # Ejecución de los 5 análisis
-            with st.spinner("Procesando NLP..."):
+            with st.spinner("Analizando..."):
+                # Se ejecutan los 5 niveles y el guardado automático
                 res = analizador.procesar_texto_completo(texto_input)
-                # Simulación de guardado (debe existir en tu lógica de AnalizadorNLP)
-                ruta_archivo = f"logs/ticket_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                
+            if res:
+                # 1. RENDERIZADO DE TABS (Aquí insertas tus pestañas actuales)
+                t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
+                
+                with t[0]: # Sentimiento
+                    s = res.get('sentimiento', {})
+                    st.metric("Etiqueta", s.get('etiqueta', 'N/A'))
+                    st.progress(s.get('confianza', 0.0))
+
+                # ... (resto de tus pestañas t[1], t[2], t[3], t[4]) ...
+
+                # 2. CONFIRMACIÓN DE GUARDADO (Requisito Bloque 7)
+                # 'ruta_archivo' debe venir del retorno de procesar_texto_completo
+                ruta = res.get('ruta_archivo', 'logs/analisis_reciente.json')
+                st.success(f"✅ Análisis completado y guardado automáticamente en: `{ruta}`")
             
-            t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
-            
-            with t[0]: # Sentimiento
-                s = res.get('sentimiento', {})
-                st.metric("Etiqueta", s.get('etiqueta', 'N/A'))
-                st.progress(s.get('confianza', 0.0), text=f"Confianza: {s.get('confianza', 0.0)}")
-
-            with t[1]: # Entidades (NER)
-                entidades = res.get('entidades', [])
-                if entidades:
-                    cols = st.columns(len(entidades))
-                    for i, ent in enumerate(entidades):
-                        cols[i % 3].info(f"**{ent['tipo']}**: {ent['texto']}")
-                else: st.write("No se detectaron entidades.")
-
-            with t[2]: # Intención
-                intenc = res.get('intencion', {})
-                st.markdown(f"**Intención principal:** {intenc.get('tipo', 'N/A')}")
-                st.warning(f"⚠️ Acción sugerida: {intenc.get('accion', 'Revisión manual')}")
-
-            with t[3]: # Resumen
-                resumenes = res.get('resumen', {})
-                with st.expander("Resumen Ultracorto"): st.write(resumenes.get('breve', ""))
-                with st.expander("Resumen Medio"): st.write(resumenes.get('medio', ""))
-                with st.expander("Resumen Detallado"): st.write(resumenes.get('detallado', ""))
-
-            with t[4]: # Clasificación
-                clase = res.get('clasificacion', {})
-                st.write(f"**Tema:** {clase.get('tema', 'General')}")
-                st.write(f"**Prioridad:**")
-                st.select_slider("Nivel", options=["Baja", "Media", "Alta", "Crítica"], value=clase.get('prioridad', 'Baja'), disabled=True)
-
-            # Barra de estado obligatoria
-            st.success(f"✅ Análisis completado y guardado automáticamente en: `{ruta_archivo}`")
-            
+            else:
+                st.error("❌ Error crítico en el análisis. Revisa la conexión con Ollama.")
+        
         else:
+            # Estado inicial antes de pulsar el botón
             st.info("Introduce un ticket y pulsa 'Analizar' para ver los resultados.")
 
 if __name__ == "__main__":
