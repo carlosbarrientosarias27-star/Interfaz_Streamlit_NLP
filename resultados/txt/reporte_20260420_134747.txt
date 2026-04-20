@@ -1,0 +1,11 @@
+==================================================
+REPORTE DE ANÁLISIS NLP - 2026-04-20 13:47
+==================================================
+
+📝 RESUMEN:
+{'breve': 'Tu mensaje', 'medio': 'no proporcionaste texto, pero como base, tu mensaje es similar a la siguiente:\n- Tu nombre\n- Agradecido por el detalle que te debo en mi mensaje. \n- Disfruto compartiendo y respetando tus ideas y opiniones.', 'detallado': 'No proporcionaste ningún texto para elaborar el mensaje, pero aquí está una versión detallada:'}
+
+📊 SENTIMIENTO: POSITIVO
+   Confianza: 100.0%
+
+🔍 ENTIDADES DETECTADAS:
