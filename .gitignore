@@ -6,8 +6,8 @@ __init__.py
 logs/*.json
 !logs/.gitkeep
 
-# Ignorar contenido de resultados pero mantener la carpeta
-almacenamiento/resultados/json/*
-almacenamiento/resultados/txt/*
-!almacenamiento/resultados/json/.gitkeep
-!almacenamiento/resultados/txt/.gitkeep
+# Ignorar contenido de resultados pero mantener la carpet
+resultados/json/*
+resultados/txt/*
+!resultados/json/.gitkeep
+!resultados/txt/.gitkeep
