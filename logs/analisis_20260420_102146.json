@@ -1,0 +1,39 @@
+{
+    "sentimiento": {
+        "sentimiento": "positivo",
+        "puntuacion": 0.9,
+        "emociones": [
+            "aumento"
+        ],
+        "confianza": 1.0
+    },
+    "entidades": {
+        "personas": [
+            {
+                "persona": {
+                    "nombre": "Juan",
+                    "edad": "28",
+                    "salario": "$3000",
+                    "puesto": "Administrador"
+                },
+                "credito_duplicado": true
+            }
+        ]
+    },
+    "intencion": {
+        "intencion_principal": "acumular",
+        "subcategoria": "personal",
+        "urgencia": "interfaz y falta de espacio",
+        "accion_sugerida": "recortar el cargo por debajo del 25%",
+        "tiempo_de_resolucion": "1-3 meses"
+    },
+    "resumen": {
+        "breve": "Tengo un cargo duplicado en mi tarjeta de crédito de 50€.",
+        "medio": "",
+        "detallado": ""
+    },
+    "clasificacion": {
+        "tema": "Personalidad",
+        "prioridad": "No"
+    }
+}

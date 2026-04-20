@@ -11,25 +11,36 @@ from src.analizador import AnalizadorNLP
 from src.cliente import check_connection
 
 def setup_styles():
-    st.set_page_config(page_title="Tickets Soporte NLP", page_icon="🎫", layout="wide")
+    # Configuración de página con layout ancho
+    st.set_page_config(page_title="Sistema de Análisis NLP", page_icon="🧠", layout="wide")
+    
+    # Inyectamos CSS para forzar el modo oscuro y estilos personalizados
     st.markdown("""
         <style>
-        .stBadge { font-size: 1.2rem !important; }
-        .terminal-box { background-color: #0e1117; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; }
-        .priority-high { color: #ff4b4b; font-weight: bold; }
+        /* Fondo oscuro para la aplicación */
+        .stApp { background-color: #0e1117; color: #ffffff; }
+        /* Estilo para los contenedores de métricas y tabs */
+        .stMetric { background-color: #1a1c23; padding: 10px; border-radius: 5px; }
+        /* Ajuste del botón ANALIZAR para que sea rojo coral como la imagen */
+        div.stButton > button:first-child {
+            background-color: #ff4b4b;
+            color: white;
+            border: none;
+        }
         </style>
     """, unsafe_allow_html=True)
 
 def main_ui():
     setup_styles()
-    # Inicialización del analizador
-    analizador = AnalizadorNLP(modelo="qwen2.5:7b")
+    
+    # Inicialización del analizador (Usamos la versión ligera que usa la empresa)
+    analizador = AnalizadorNLP(modelo="qwen2.5:0.5b")
 
-    # --- SIDEBAR (Ejemplos Disponibles) ---
+    # --- SIDEBAR (Información de capacidades) ---
     with st.sidebar:
-        st.header("📋 Información")
+        st.header("Información")
+        st.markdown("**Capacidades demostradas:**")
         st.markdown("""
-        **Capacidades:**
         * 🔵 Análisis de Sentimiento
         * 🟢 Extracción de Entidades (NER)
         * 🟡 Detección de Intención
@@ -37,67 +48,63 @@ def main_ui():
         * 🔴 Clasificación Multicategoría
         """)
         st.divider()
-        st.markdown("### 📂 Ejemplos Disponibles")
-        ejemplos = {
-            "Problema de Acceso": "No puedo entrar a mi cuenta corporativa. Me da error de password.",
-            "Error de Facturación": "Tengo un cargo duplicado en mi tarjeta de crédito de 50€.",
-            "Consulta Técnica": "¿Cómo exporto los logs en formato JSON desde la consola de administración?"
-        }
-        for nombre, texto_ej in ejemplos.items():
-            if st.button(f"📄 {nombre}"):
-                st.session_state.input_text = texto_ej
+        st.caption(f"Último acceso: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # --- HEADER ---
-    st.markdown("<h2 style='text-align: center;'>🗃️ Sistema de Análisis de Tickets de Soporte con NLP</h2>", unsafe_allow_html=True)
-    
-    c_status, c_model = st.columns([4, 1])
-    with c_status:
-        if check_connection():
-            st.success("Ollama conectado", icon="✅")
-    with c_model:
-        st.info(f"🤖 {analizador.modelo}")
+    # --- HEADER PRINCIPAL ---
+    st.markdown("<h1 style='text-align: left;'>🧠 Sistema de Análisis NLP</h1>", unsafe_allow_html=True)
+    st.write("_Demostración de capacidades: Sentimiento, Entidades, Intención, Resumen y Clasificación_")
+    st.divider()
 
-    col_izq, col_der = st.columns([1, 1.2])
+    # --- CUERPO PRINCIPAL (2 Columnas: Entrada vs Configuración) ---
+    col_input, col_config = st.columns([2, 1])
 
-    with col_izq:
+    with col_input:
         st.markdown("### 📄 Texto de entrada")
-        texto_input = st.text_area("ticket", value=st.session_state.get('input_text', ""), height=250, label_visibility="collapsed")
         
-        btn_analizar = st.button("🚀 ANALIZAR TICKET", use_container_width=True, type="primary")
+        # Selector de ejemplos integrado en el centro (como la imagen 2)
+        ejemplos = {
+            "Seleccione un ejemplo...": "",
+            "Problema de Acceso - Error Password": "No puedo entrar a mi cuenta corporativa. Me da error de password.",
+            "Error de Facturación - Cargo Duplicado": "Tengo un cargo duplicado en mi tarjeta de crédito de 50€.",
+            "Consulta Técnica - Timeout en Python": "¿Alguien sabe cómo configurar el timeout en una conexión HTTP con Python? Estoy usando la librería requests y a veces se queda colgado cuando el servidor tarda más de 10 segundos. He visto que hay un parámetro timeout en requests.get(), pero no sé si ponerlo en segundos o milisegundos."
+        }
         
-        if st.button("🗑 Limpiar"):
-            st.session_state.input_text = ""
-            st.rerun()
+        ejemplo_sel = st.selectbox("Cargar ejemplo:", list(ejemplos.keys()))
+        texto_defecto = ejemplos[ejemplo_sel] if ejemplo_sel != "Seleccione un ejemplo..." else st.session_state.get('input_text', "")
 
-    with col_der:
-        # ESTE ES EL BLOQUE QUE DEBES INSERTAR
-        if btn_analizar and texto_input:
-            with st.spinner("Analizando..."):
-                # Se ejecutan los 5 niveles y el guardado automático
-                res = analizador.procesar_texto_completo(texto_input)
-                
-            if res:
-                # 1. RENDERIZADO DE TABS (Aquí insertas tus pestañas actuales)
-                t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
-                
-                with t[0]: # Sentimiento
-                    s = res.get('sentimiento', {})
-                    st.metric("Etiqueta", s.get('etiqueta', 'N/A'))
-                    st.progress(s.get('confianza', 0.0))
+        texto_input = st.text_area("Texto a analizar:", value=texto_defecto, height=200)
+        
+        btn_analizar = st.button("🚀 ANALIZAR", use_container_width=True)
 
-                # ... (resto de tus pestañas t[1], t[2], t[3], t[4]) ...
+    with col_config:
+        st.markdown("### ⚙️ Configuración")
+        with st.container(border=True):
+            st.info(f"**Modelo:** `{analizador.modelo}` (Ollama)")
+            st.checkbox("Guardar en logs/", value=True)
+            st.checkbox("Mostrar debug", value=False)
+        
+        if check_connection():
+            st.success("Requisito: Ollama corriendo correctamente", icon="⚙️")
 
-                # 2. CONFIRMACIÓN DE GUARDADO (Requisito Bloque 7)
-                # 'ruta_archivo' debe venir del retorno de procesar_texto_completo
-                ruta = res.get('ruta_archivo', 'logs/analisis_reciente.json')
-                st.success(f"✅ Análisis completado y guardado automáticamente en: `{ruta}`")
+    # --- RESULTADOS ---
+    if btn_analizar and texto_input:
+        st.divider()
+        with st.spinner("Procesando análisis..."):
+            res = analizador.procesar_texto_completo(texto_input)
+        
+        if res:
+            t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
             
-            else:
-                st.error("❌ Error crítico en el análisis. Revisa la conexión con Ollama.")
-        
+            with t[0]: # Sentimiento
+                s = res.get('sentimiento', {})
+                st.subheader(f"Etiqueta: {s.get('etiqueta', 'N/A')}")
+                st.progress(s.get('confianza', 0.5))
+            
+            # (Aquí iría el contenido de las otras pestañas...)
+            
+            st.toast("Análisis completado", icon="✅")
         else:
-            # Estado inicial antes de pulsar el botón
-            st.info("Introduce un ticket y pulsa 'Analizar' para ver los resultados.")
+            st.error("No se pudo obtener respuesta del modelo.")
 
 if __name__ == "__main__":
     main_ui()
