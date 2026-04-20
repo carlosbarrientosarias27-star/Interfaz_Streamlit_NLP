@@ -1,4 +1,7 @@
 .env
 __pycache__
 __init__.py
-logs/analisis_20260420_102146.json/*
+
+# Ignorar contenido de resultados pero mantener la carpeta
+logs/*.json
+!logs/.gitkeep
