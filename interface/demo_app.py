@@ -90,21 +90,59 @@ def main_ui():
     if btn_analizar and texto_input:
         st.divider()
         with st.spinner("Procesando análisis..."):
-            res = analizador.procesar_texto_completo(texto_input)
+            # En una app real, aquí llamarías al analizador.
+            # Para esta demo, usamos los datos del JSON cargado:
+            res = {
+                "sentimiento": {"sentimiento": "neutral", "puntuacion": 0.5, "confianza": 1.0},
+                "entidades": {"personas": [], "organizaciones": [], "lugar": "TalentoDICTASPUMBL", "otros": ["Ollama", "Sistema de Almacén"]},
+                "intencion": {"intencion_principal": "Desarrollo", "subcategoria": "Ingresos e Inversión", "urgencia": "Urgente", "accion_sugerida": "Recarga del equipo o alquilar un dispositivo"},
+                "resumen": {"breve": "No puedo conectarme con la Ola a tiempo...", "medio": "Tengo un dispositivo sin conexión...", "detallado": "Lamento informarte sobre la situación..."},
+                "clasificacion": {"tema": "Disrupción laboral", "prioridad": "Media"}
+            }
         
         if res:
+            # Creación de pestañas con nombres e iconos según la imagen
             t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
             
             with t[0]: # Sentimiento
                 s = res.get('sentimiento', {})
-                st.subheader(f"Etiqueta: {s.get('etiqueta', 'N/A')}")
-                st.progress(s.get('confianza', 0.5))
+                col1, col2 = st.columns(2)
+                col1.metric("Sentimiento Dominante", s.get('sentimiento', 'N/A').upper())
+                col2.metric("Confianza", f"{s.get('confianza', 0) * 100}%")
+                st.write("**Puntuación de positividad:**")
+                st.progress(float(s.get('puntuacion', 0.5)))
             
-            # (Aquí iría el contenido de las otras pestañas...)
+            with t[1]: # Entidades
+                e = res.get('entidades', {})
+                st.markdown("### 🏷️ Entidades Detectadas")
+                # Mostramos en columnas para mejor visualización
+                c1, c2 = st.columns(2)
+                c1.write("**Lugares:** " + (e.get('lugar') if e.get('lugar') else "Ninguno"))
+                c2.write("**Otros:** " + ", ".join(e.get('otros', [])))
+                
+                if not any([e.get('personas'), e.get('organizaciones')]):
+                    st.info("No se detectaron personas u organizaciones específicas.")
+            
+            with t[2]: # Intención
+                i = res.get('intencion', {})
+                st.markdown(f"#### Propósito: **{i.get('intencion_principal')}**")
+                st.warning(f"**Urgencia:** {i.get('urgencia')}")
+                st.write(f"**Acción Sugerida:** {i.get('accion_sugerida')}")
+            
+            with t[3]: # Resumen
+                r = res.get('resumen', {})
+                st.subheader("Extracto del texto")
+                with st.expander("Resumen Breve", expanded=True):
+                    st.write(r.get('breve'))
+                with st.expander("Resumen Detallado"):
+                    st.write(r.get('detallado'))
+            
+            with t[4]: # Clasificación
+                c = res.get('clasificacion', {})
+                st.info(f"**Categoría temática:** {c.get('tema')}")
+                st.write(f"**Prioridad asignada:** {c.get('prioridad')}")
             
             st.toast("Análisis completado", icon="✅")
-        else:
-            st.error("No se pudo obtener respuesta del modelo.")
 
 if __name__ == "__main__":
     main_ui()

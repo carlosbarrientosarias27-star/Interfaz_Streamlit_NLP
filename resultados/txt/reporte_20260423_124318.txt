@@ -1,0 +1,11 @@
+==================================================
+REPORTE DE ANÁLISIS NLP - 2026-04-23 12:43
+==================================================
+
+📝 RESUMEN:
+Sin resumen
+
+📊 SENTIMIENTO: N/A
+   Confianza: 0%
+
+🔍 ENTIDADES DETECTADAS:
