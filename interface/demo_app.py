@@ -19,14 +19,35 @@ def setup_styles():
         <style>
         /* Fondo oscuro para la aplicación */
         .stApp { background-color: #0e1117; color: #ffffff; }
-        /* Estilo para los contenedores de métricas y tabs */
-        .stMetric { background-color: #1a1c23; padding: 10px; border-radius: 5px; }
+        }
+
+        /* FORZAR COLOR NEGRO EN TODO EL CONTENIDO DE LA MÉTRICA */
+        /* Esto apunta a cualquier texto, div o etiqueta dentro de la métrica */
+        [data-testid="stMetric"] * {
+            color: #000000 !important;
+        }
+
+        /* Específicamente para el valor grande (NEUTRAL / 100%) */
+        [data-testid="stMetricValue"] {
+            font-size: 1.8rem !important;
+            font-weight: 700 !important;
+            color: #ffffff !important;
+        }
+
+        /* Específicamente para el título pequeño arriba */
+        [data-testid="stMetricLabel"] p {
+            font-size: 0.9rem !important;
+            color: #444444 !important;
+            text-transform: uppercase !important;
+        }
+        
         /* Ajuste del botón ANALIZAR para que sea rojo coral como la imagen */
         div.stButton > button:first-child {
             background-color: #ff4b4b;
             color: white;
             border: none;
         }
+                
         </style>
     """, unsafe_allow_html=True)
 
@@ -102,7 +123,7 @@ def main_ui():
         
         if res:
             # Creación de pestañas con nombres e iconos según la imagen
-            t = st.tabs(["😊 Sentimiento", "🔍 Entidades", "🎯 Intención", "📝 Resumen", "📊 Clasificación"])
+            t = st.tabs(["🔵 Sentimiento", "🟢 Entidades", "🟡 Intención", "🟠 Resumen", "🔴 Clasificación"])
             
             with t[0]: # Sentimiento
                 s = res.get('sentimiento', {})
