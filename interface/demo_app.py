@@ -81,7 +81,17 @@ def main_ui():
 
     with col_input:
         st.markdown("### 📄 Texto de entrada")
-        
+    
+    # Inicializamos el estado si no existe
+        if "input_text" not in st.session_state:
+            st.session_state.input_text = ""
+        if "analizado" not in st.session_state:
+            st.session_state.analizado = False
+
+        def limpiar_texto():
+            st.session_state.input_text = ""
+            st.session_state.analizado = False
+         
         # Selector de ejemplos integrado en el centro (como la imagen 2)
         ejemplos = {
             "Seleccione un ejemplo...": "",
@@ -109,6 +119,9 @@ def main_ui():
 
     # --- RESULTADOS ---
     if btn_analizar and texto_input:
+        st.session_state.analizado = True
+        
+    if st.session_state.analizado and texto_input.strip() != "":
         st.divider()
         with st.spinner("Procesando análisis..."):
             # En una app real, aquí llamarías al analizador.
